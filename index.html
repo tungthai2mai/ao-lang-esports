@@ -1,89 +1,214 @@
 <!DOCTYPE html>
 <html lang="vi"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Quản lý giải đấu Esports</title>
+<title>Giải đấu Esports</title>
 <style>
-:root{--bg:#f5f6fa;--card:#fff;--tx:#1a1d2e;--mu:#667;--ac:#6c3df0;--bd:#e3e5ef;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10121c;--card:#1a1d2e;--tx:#eef0fa;--mu:#9aa;--bd:#2a2e44}}
-:root[data-theme="dark"]{--bg:#10121c;--card:#1a1d2e;--tx:#eef0fa;--mu:#9aa;--bd:#2a2e44}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:15px system-ui,sans-serif}
-header{background:var(--ac);color:#fff;padding:16px}header h1{margin:0;font-size:20px}
-nav{display:flex;gap:6px;overflow-x:auto;padding:10px 12px;background:var(--card);border-bottom:1px solid var(--bd)}
-nav button{border:0;background:none;color:var(--mu);padding:8px 12px;border-radius:8px;white-space:nowrap;font:inherit;cursor:pointer}
-nav button.on{background:var(--ac);color:#fff}
-main{max-width:900px;margin:auto;padding:12px}
-.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px;margin-bottom:12px}
-h2{margin:0 0 8px;font-size:16px}.t{overflow-x:auto}table{width:100%;border-collapse:collapse}
-th,td{padding:7px 6px;text-align:center;border-bottom:1px solid var(--bd)}th:nth-child(2),td:nth-child(2){text-align:left}th{color:var(--mu);font-size:12px}
-.m{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--bd);flex-wrap:wrap}
-.m .d{color:var(--mu);font-size:12px;width:100%}.m b{flex:1;min-width:90px}.sc{background:var(--bg);padding:4px 10px;border-radius:8px;font-weight:700}
-.v{aspect-ratio:16/9;width:100%;border:0;border-radius:10px;background:#000}
-input,select,button.b{font:inherit;padding:8px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx)}
-button.b{background:var(--ac);color:#fff;border:0;cursor:pointer}button.x{border:0;background:none;color:#d33;cursor:pointer}
-.f{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.f input,.f select{flex:1;min-width:110px}
-.sec{display:none}.sec.on{display:block}.mu{color:var(--mu);font-size:13px}.ad{border:2px dashed var(--ac)}
+:root{--bg:#090a0f;--card:#12141d;--tx:#eef0ff;--mu:#8b92b5;--ac:#00ff87;--ac2:#60efff;--bd:#1e2235;--nav:rgba(9,10,15,.85);--sh:0 8px 32px rgba(0,255,135,.15);--glow:0 0 10px rgba(0,255,135,.3)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);background-image:radial-gradient(circle at 50% 0%,rgba(0,255,135,.1),transparent 50%);color:var(--tx);font:15px/1.5 'Inter',system-ui,sans-serif}
+.nav{position:sticky;top:0;z-index:20;background:var(--nav);backdrop-filter:blur(16px);border-bottom:1px solid var(--bd)}
+.nb{max-width:1000px;margin:auto;display:flex;align-items:center;gap:15px;padding:12px 16px;flex-wrap:wrap}
+.brand{font-weight:800;font-size:20px;background:linear-gradient(90deg,var(--ac),var(--ac2));-webkit-background-clip:text;background-clip:text;color:transparent;margin-right:auto;text-shadow:var(--glow);text-transform:uppercase;letter-spacing:1px}
+.nl{display:flex;gap:6px;overflow-x:auto;max-width:100%;order:3;width:100%;padding-bottom:4px}
+.nl::-webkit-scrollbar{height:0}
+@media(min-width:760px){.nl{order:0;width:auto;padding:0}}
+.nl button{border:1px solid transparent;background:none;color:var(--mu);padding:8px 16px;border-radius:8px;font:600 14px inherit;white-space:nowrap;cursor:pointer;transition:all .2s}
+.nl button:hover{color:var(--tx);background:rgba(255,255,255,.05)}
+.nl button.on{background:linear-gradient(90deg,var(--ac),var(--ac2));color:#000;box-shadow:var(--glow);font-weight:800}
+.lg{border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:8px;padding:8px 14px;font:600 13px inherit;cursor:pointer;transition:.2s}
+.lg:hover{border-color:var(--ac);box-shadow:var(--glow)}
+.hero{background:linear-gradient(135deg,rgba(9,10,15,.9),rgba(0,255,135,.1)),url('https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80') center/cover;color:#fff;padding:40px 16px;border-bottom:1px solid var(--bd)}
+.hero div{max-width:1000px;margin:auto}
+.hero h1{margin:0;font-size:32px;font-weight:800;text-shadow:0 2px 10px rgba(0,0,0,.8)}
+.hero p{margin:8px 0 0;opacity:.9;font-size:15px;color:var(--ac2)}
+main{max-width:1000px;margin:auto;padding:24px 16px 60px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:20px;margin-bottom:16px;box-shadow:0 4px 20px rgba(0,0,0,.5);position:relative}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--ac),transparent);opacity:.5}
+h2{margin:0 0 16px;font-size:18px;display:flex;align-items:center;gap:8px}
+.mu{color:var(--mu);font-size:13px}
+.dh{font-weight:800;color:var(--ac2);font-size:14px;margin:20px 2px 10px;text-transform:uppercase;letter-spacing:1px}
+.mc{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;padding:16px 0;border-bottom:1px solid var(--bd)}
+.mc:last-child{border:0}
+.tm{display:flex;align-items:center;gap:10px;font-weight:600;font-size:16px}
+.tm.r{justify-content:flex-end;text-align:right}
+.mid{text-align:center;min-width:80px}
+.sc{font-size:22px;font-weight:800;background:rgba(0,255,135,.1);color:var(--ac);padding:4px 16px;border-radius:8px;display:inline-block;border:1px solid rgba(0,255,135,.3)}
+.meta{grid-column:1/-1;display:flex;gap:10px;align-items:center;justify-content:center;font-size:12px;color:var(--mu);margin-top:4px}
+.chip{padding:4px 10px;border-radius:6px;background:rgba(255,255,255,.05);font-weight:600;border:1px solid var(--bd)}
+.chip.fin{background:rgba(0,255,135,.1);color:var(--ac);border-color:rgba(0,255,135,.3)}
+.av{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:8px;color:#000;font-size:13px;font-weight:800;flex:none;box-shadow:inset 0 0 0 1px rgba(255,255,255,.2)}
+.t{overflow-x:auto}table{width:100%;border-collapse:collapse}th,td{padding:12px 8px;text-align:center;border-bottom:1px solid var(--bd)}
+th{color:var(--mu);font-size:13px;font-weight:600;text-transform:uppercase}td:nth-child(2),th:nth-child(2){text-align:left}tr:last-child td{border:0}
+tr.q td:first-child{box-shadow:inset 4px 0 var(--ac)}
+.tn{display:flex;align-items:center;gap:10px;font-weight:600}
+.g3{display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(290px,1fr))}.g3 .card{margin:0}
+.pl{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--bd);transition:.2s}.pl:hover{background:rgba(255,255,255,.02)}.pl:last-child{border:0}
+.pl .n{flex:1;min-width:0}.pl .n b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:15px}.pl .rk{width:30px;text-align:center;font-weight:800;color:var(--ac2);font-size:16px}
+.pl .v{font-size:20px;font-weight:800;color:var(--ac)}
+.hg{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+.hc{background:var(--card);border:1px solid var(--bd);border-radius:12px;overflow:hidden;cursor:pointer;position:relative;transition:.3s}
+.hc:hover{border-color:var(--ac);box-shadow:var(--glow);transform:translateY(-2px)}
+.hc .th{aspect-ratio:16/9;background:#000 center/cover;display:flex;align-items:center;justify-content:center}
+.hc .pb{width:56px;height:56px;border-radius:50%;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);color:var(--ac);display:flex;align-items:center;justify-content:center;font-size:24px;border:2px solid var(--ac);transition:.3s}
+.hc:hover .pb{background:var(--ac);color:#000;transform:scale(1.1)}
+.hc .tt{padding:14px;font-weight:600;font-size:15px}.hc .x{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.8);color:#ff3366;border-radius:8px;width:30px;height:30px;border:1px solid #ff3366}
+.v{aspect-ratio:16/9;width:100%;border:0;border-radius:12px;background:#000;box-shadow:0 8px 30px rgba(0,0,0,.6)}
+.live{border:1px solid var(--ac);box-shadow:var(--glow)}
+.live h2 span{color:var(--ac);animation:bl 1.5s infinite;text-shadow:var(--glow)}
+@keyframes bl{50%{opacity:.4}}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.9);backdrop-filter:blur(4px);z-index:50;display:none;align-items:center;justify-content:center;padding:20px}.modal.on{display:flex}.modal div{width:100%;max-width:900px}
+input,select,button.b{font:inherit;padding:10px 14px;border:1px solid var(--bd);border-radius:8px;background:rgba(0,0,0,.3);color:var(--tx);transition:.2s}
+input:focus,select:focus{border-color:var(--ac);outline:none;box-shadow:0 0 0 2px rgba(0,255,135,.2)}
+button.b{background:linear-gradient(90deg,var(--ac),var(--ac2));color:#000;border:0;cursor:pointer;font-weight:800;text-transform:uppercase}
+button.b:hover{box-shadow:var(--glow);filter:brightness(1.1)}
+button.x{border:0;background:none;color:#ff3366;cursor:pointer;font-size:16px;font-weight:800}button.ed{border:0;background:none;cursor:pointer;color:var(--ac2);font-size:16px}
+.f{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}.f input,.f select{flex:1;min-width:120px}.ad{border:1px dashed var(--ac2)}
+.bracket-wrapper{overflow-x:auto;padding:20px 0}
+.b-grid{display:grid;grid-template-areas:"w1 . gf" "l1 l2 gf";gap:40px 50px;min-width:850px;align-items:center}
+.b-w1{grid-area:w1}.b-l1{grid-area:l1}.b-l2{grid-area:l2}.b-gf{grid-area:gf}
+.match{background:var(--card);border:1px solid var(--bd);border-radius:12px;width:250px;position:relative;z-index:1;box-shadow:0 4px 16px rgba(0,0,0,.4);overflow:hidden}
+.match-team{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid var(--bd);font-size:14px;font-weight:600;transition:.2s}
+.match-team.win{background:rgba(0,255,135,.05)}
+.match-team:last-child{border:0}
+.match-team .sc{padding:2px 10px;font-size:14px;border-radius:6px;border:0;background:rgba(255,255,255,.05);color:var(--tx)}
+.match-team.win .sc{background:var(--ac);color:#000;box-shadow:var(--glow);font-weight:800}
+.match-team.mu{opacity:0.4;filter:grayscale(1)}
+.b-w1::after{content:'';position:absolute;right:-50px;top:50%;width:50px;height:2px;background:var(--bd);z-index:-1}
+.b-l1::after{content:'';position:absolute;right:-50px;top:50%;width:50px;height:2px;background:var(--bd);z-index:-1}
+.b-l2::before{content:'';position:absolute;left:-50px;top:50%;width:50px;height:2px;background:var(--bd);z-index:-1}
+.b-l2::after{content:'';position:absolute;right:-50px;top:50%;width:50px;height:2px;background:var(--bd);z-index:-1}
+.b-w1::before{content:'⬇ Thua xuống đây';position:absolute;right:10px;bottom:-30px;font-size:10px;color:var(--mu);white-space:nowrap}
+.champ{text-align:center;padding:20px;background:rgba(0,255,135,.1);border:1px solid var(--ac);border-radius:12px;margin-top:20px;box-shadow:var(--glow);animation:bl 2s infinite}
 </style></head><body>
-<header><h1>🎮 Giải đấu Esports</h1><div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><div id="st" class="mu" style="color:#fffc"></div><button id="lg" class="b" style="background:#fff3;padding:6px 10px"></button></div></header>
-<nav id="nav"></nav><main id="app"></main>
+<div class="nav"><div class="nb"><div class="brand">🎮 ESPORTS CUP</div><div class="nl" id="nav"></div><button class="lg" id="lg"></button></div></div>
+<div class="hero"><div><h1>Giải đấu Esports</h1><p id="st">Đang tải...</p></div></div>
+<main id="app"></main>
+<div class="modal" id="mdl" onclick="closeHL()"><div id="mdlb"></div></div>
 <script>
-const TABS=[["lich","Lịch đấu"],["bxh","Bảng đấu"],["sut","Vua phá lưới"],["kt","Kiến tạo"],["the","Thẻ phạt"],["vid","Video"]];
-let S={teams:[],matches:[],players:[],videos:[]},tab="lich",ref=null,canEdit=false,saveOk=false;
+const TABS=[["lich","📅 Lịch đấu"],["bxh","🏆 Bảng đấu"],["ko","⚔️ Nhánh đấu"],["tk","📊 Thống kê"],["hl","🎬 Highlight"]];
+let S={teams:[],matches:[],players:[],videos:[]},tab="lich",canEdit=false,LAST="",HL=[];
 const $=s=>document.querySelector(s),esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const uid=()=>Math.random().toString(36).slice(2,9);
+const uid=()=>Math.random().toString(36).slice(2,9),v=id=>$("#"+id).value.trim();
 function ytId(u){const m=String(u).match(/(?:v=|youtu\.be\/|embed\/|live\/|shorts\/)([\w-]{11})/);return m?m[1]:null}
-function ytBox(u){const i=ytId(u);return i?`<iframe class="v" src="https://www.youtube.com/embed/${i}" allowfullscreen loading="lazy"></iframe><div class="mu"><a href="https://youtu.be/${i}" target="_blank" rel="noopener">Mở trên YouTube</a></div>`:""}
+function ytBox(u){const i=ytId(u);return i?`<iframe class="v" src="https://www.youtube.com/embed/${i}" allowfullscreen loading="lazy"></iframe><div class="mu" style="margin-top:6px"><a href="https://youtu.be/${i}" target="_blank" rel="noopener">Mở trên YouTube</a></div>`:""}
+function av(n){let h=0;for(const c of String(n))h=(h*31+c.charCodeAt(0))%360;const w=String(n).trim().split(/\s+/);const i=(w.length>1?w[0][0]+w[w.length-1][0]:String(n).slice(0,2)).toUpperCase();return `<span class="av" style="background:hsl(${h} 65% 48%)">${esc(i)}</span>`}
 let PW=sessionStorage.getItem("pw")||"";
 async function api(body){const r=await fetch("/api/state",{method:"POST",headers:{"Content-Type":"application/json","x-admin-password":PW},body:JSON.stringify(body)});
  if(r.status===401){PW="";sessionStorage.removeItem("pw");canEdit=false;if(tab==="ad")tab="lich";render();throw new Error("Sai mật khẩu hoặc hết phiên")}
  if(!r.ok){const j=await r.json().catch(()=>({}));throw new Error(j.error||"Lỗi "+r.status)}return r.json()}
-async function save(){render();try{await api({state:S})}catch(e){alert("Không lưu được: "+e.message)}}
+async function save(){LAST=JSON.stringify(S);render();try{await api({state:S})}catch(e){alert("Không lưu được: "+e.message)}}
 async function login(){if(canEdit){PW="";sessionStorage.removeItem("pw");canEdit=false;if(tab==="ad")tab="lich";return render()}
  const p=prompt("Mật khẩu admin:");if(!p)return;PW=p;try{await api({login:true});sessionStorage.setItem("pw",p);canEdit=true;render()}catch(e){alert(e.message)}}
-async function load(){try{const r=await fetch("/api/state",{cache:"no-store"});if(!r.ok)throw 0;S=norm(await r.json());$("#st").textContent=canEdit?"Chế độ quản trị":"Đang xem";render()}catch(e){$("#st").textContent="Không tải được dữ liệu"}}
+const norm=d=>({teams:d?.teams||[],matches:d?.matches||[],players:d?.players||[],videos:d?.videos||[]});
+async function load(){try{const r=await fetch("/api/state",{cache:"no-store"});if(!r.ok)throw 0;const j=await r.json(),n=JSON.stringify(norm(j));
+ $("#st").textContent=canEdit?"Chế độ quản trị":"Cập nhật trực tiếp từ ban tổ chức";if(n!==LAST){LAST=n;S=norm(j);render()}}catch(e){$("#st").textContent="Không tải được dữ liệu"}}
 function table(g){const r={};S.teams.filter(t=>t.g===g).forEach(t=>r[t.n]={n:t.n,p:0,w:0,d:0,l:0,gf:0,ga:0,pt:0});
  S.matches.filter(m=>m.g===g&&m.hs!==""&&m.as!==""&&m.hs!=null).forEach(m=>{const a=r[m.h],b=r[m.a];if(!a||!b)return;const x=+m.hs,y=+m.as;
  a.p++;b.p++;a.gf+=x;a.ga+=y;b.gf+=y;b.ga+=x;if(x>y){a.w++;b.l++;a.pt+=3}else if(x<y){b.w++;a.l++;b.pt+=3}else{a.d++;b.d++;a.pt++;b.pt++}});
  return Object.values(r).sort((a,b)=>b.pt-a.pt||(b.gf-b.ga)-(a.gf-a.ga)||b.gf-a.gf)}
 const teamOpts=()=>S.teams.map(t=>`<option>${esc(t.n)}</option>`).join("");
-function rank(k,label){const l=[...S.players].filter(p=>p[k]>0).sort((a,b)=>b[k]-a[k]);
- return `<div class="card"><h2>${label}</h2><div class="t"><table><tr><th>#</th><th>Cầu thủ</th><th>Đội</th><th>SL</th></tr>${l.map((p,i)=>`<tr><td>${i+1}</td><td>${esc(p.n)}</td><td>${esc(p.t)}</td><td><b>${p[k]}</b></td></tr>`).join("")||'<tr><td colspan=4 class="mu">Chưa có dữ liệu</td></tr>'}</table></div></div>`}
-function admin(h){return canEdit?h:""}
+const medal=i=>["🥇","🥈","🥉"][i]||i+1;
+function pcard(title,list,val){return `<div class="card"><h2>${title}</h2>${list.slice(0,10).map((p,i)=>`<div class="pl"><div class="rk">${medal(i)}</div>${av(p.n)}<div class="n"><b>${esc(p.n)}</b><span class="mu">${esc(p.t)}</span></div><div class="v">${val(p)}</div></div>`).join("")||'<div class="mu">Chưa có dữ liệu</div>'}</div>`}
+function liveBox(){const l=S.videos.find(x=>x.live);return l?`<div class="card live"><h2><span>🔴 TRỰC TIẾP</span> ${esc(l.t)}</h2>${ytBox(l.u)}</div>`:""}
+function fmtD(d){if(!d)return "Chưa xếp lịch";const p=d.split("-");return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:d}
 function render(){
- $("#lg").textContent=canEdit?"Đăng xuất":"🔑 Đăng nhập admin";$("#lg").onclick=login;
- $("#nav").innerHTML=TABS.map(([k,l])=>`<button class="${k===tab?"on":""}" onclick="tab='${k}';render()">${l}</button>`).join("")+(canEdit?`<button class="${tab==="ad"?"on":""}" onclick="tab='ad';render()">⚙️ Quản trị</button>`:"");
+ $("#lg").textContent=canEdit?"Đăng xuất":"🔑 Admin";$("#lg").onclick=login;
+ $("#nav").innerHTML=[...TABS,...(canEdit?[["ad","⚙️ Quản trị"]]:[])].map(([k,l])=>`<button class="${k===tab?"on":""}" onclick="tab='${k}';render();scrollTo(0,0)">${l}</button>`).join("");
  let h="";
- if(tab==="lich"){const l=[...S.matches].sort((a,b)=>(a.d+a.t).localeCompare(b.d+b.t));
-  h=`<div class="card"><h2>Lịch thi đấu</h2>${l.map(m=>`<div class="m"><div class="d">${esc(m.d)} ${esc(m.t)} · Bảng ${esc(m.g)}</div><b style="text-align:right">${esc(m.h)}</b><span class="sc">${m.hs===""||m.hs==null?"vs":esc(m.hs)+" - "+esc(m.as)}</span><b>${esc(m.a)}</b>${m.yt?`<a href="#" onclick="tab='vid';render();return false">▶</a>`:""}${admin(`<button class="x" onclick="del('matches','${m.id}')">✕</button>`)}</div>`).join("")||'<div class="mu">Chưa có trận đấu</div>'}</div>`}
- if(tab==="bxh")h=["A","B"].map(g=>`<div class="card"><h2>Bảng ${g}</h2><div class="t"><table><tr><th>#</th><th>Đội</th><th>Trận</th><th>T</th><th>H</th><th>B</th><th>HS</th><th>Điểm</th></tr>${table(g).map((r,i)=>`<tr><td>${i+1}</td><td>${esc(r.n)}</td><td>${r.p}</td><td>${r.w}</td><td>${r.d}</td><td>${r.l}</td><td>${r.gf-r.ga}</td><td><b>${r.pt}</b></td></tr>`).join("")||'<tr><td colspan=8 class="mu">Chưa có đội</td></tr>'}</table></div></div>`).join("");
- if(tab==="sut")h=rank("g","⚽ Vua phá lưới");
- if(tab==="kt")h=rank("a","🎯 Kiến tạo");
- if(tab==="the"){const l=S.players.filter(p=>p.y||p.r);h=`<div class="card"><h2>🟨🟥 Thẻ phạt</h2><div class="t"><table><tr><th>#</th><th>Cầu thủ</th><th>Đội</th><th>🟨</th><th>🟥</th></tr>${l.sort((a,b)=>b.r-a.r||b.y-a.y).map((p,i)=>`<tr><td>${i+1}</td><td>${esc(p.n)}</td><td>${esc(p.t)}</td><td>${p.y}</td><td>${p.r}</td></tr>`).join("")||'<tr><td colspan=5 class="mu">Chưa có thẻ</td></tr>'}</table></div></div>`}
- if(tab==="vid"){const v=[...S.matches.filter(m=>m.yt).map(m=>({t:`${m.h} vs ${m.a}`,u:m.yt})),...S.videos.map(x=>({t:x.t,u:x.u,id:x.id}))];
-  h=v.map(x=>`<div class="card"><h2>${esc(x.t)} ${x.id&&canEdit?`<button class="x" onclick="del('videos','${x.id}')">✕</button>`:""}</h2>${ytBox(x.u)||'<div class="mu">Link YouTube không hợp lệ</div>'}</div>`).join("")||'<div class="card mu">Chưa có video</div>'}
+ if(tab==="lich"){const l=[...S.matches.filter(m=>m.g!=="KO")].sort((a,b)=>(a.d+a.t).localeCompare(b.d+b.t));let last=null;
+  h=l.map(m=>{const hd=m.d!==last?`<div class="dh">${fmtD(m.d)}</div>`:"";last=m.d;const fin=m.hs!==""&&m.hs!=null&&m.as!==""&&m.as!=null;
+  return hd+`<div class="card" style="margin:0 0 8px;padding:4px 14px"><div class="mc"><div class="tm r">${esc(m.h)} ${av(m.h)}</div><div class="mid">${fin?`<span class="sc">${esc(m.hs)} - ${esc(m.as)}</span>`:`<b>${esc(m.t)||"vs"}</b>`}</div><div class="tm">${av(m.a)} ${esc(m.a)}</div>
+  <div class="meta"><span class="chip">Bảng ${esc(m.g)}</span><span class="chip ${fin?"fin":""}">${fin?"Đã đấu":"Sắp diễn ra"}</span>${m.yt?`<a href="#" onclick="tab='hl';render();return false">▶ Highlight</a>`:""}${canEdit?`<button class="ed" onclick="editM('${m.id}')">✎</button><button class="x" onclick="del('matches','${m.id}')">✕</button>`:""}</div></div></div>`}).join("")||'<div class="card mu">Chưa có trận đấu</div>'}
+ if(tab==="bxh")h='<div class="g3">'+["A","B"].map(g=>`<div class="card"><h2>Bảng ${g}</h2><div class="t"><table><tr><th>#</th><th>Đội</th><th>Trận</th><th>T</th><th>H</th><th>B</th><th>HS</th><th>Đ</th></tr>${table(g).map((r,i)=>`<tr class="${i<2?"q":""}"><td>${i+1}</td><td><div class="tn">${av(r.n)}${esc(r.n)}</div></td><td>${r.p}</td><td>${r.w}</td><td>${r.d}</td><td>${r.l}</td><td>${r.gf-r.ga}</td><td><b>${r.pt}</b></td></tr>`).join("")||'<tr><td colspan=8 class="mu">Chưa có đội</td></tr>'}</table></div><div class="mu" style="margin-top:6px">Viền xanh: 2 đội dẫn đầu</div></div>`).join("")+'</div>';
+ if(tab==="tk"){const P=S.players;h='<div class="g3">'+pcard("⚽ Vua phá lưới",P.filter(p=>p.g>0).sort((a,b)=>b.g-a.g),p=>p.g)+pcard("🎯 Kiến tạo",P.filter(p=>p.a>0).sort((a,b)=>b.a-a.a),p=>p.a)+pcard("🟨🟥 Thẻ phạt",P.filter(p=>p.y||p.r).sort((a,b)=>b.r-a.r||b.y-a.y),p=>`<span style="font-size:14px">🟨${p.y} 🟥${p.r}</span>`)+'</div>'}
+ if(tab==="ko"){
+  let gA=S.matches.filter(m=>m.g==="A"&&m.hs!==""&&m.hs!=null),gB=S.matches.filter(m=>m.g==="B"&&m.hs!==""&&m.hs!=null);
+  let okA=gA.length>0&&gA.length===S.matches.filter(m=>m.g==="A").length;
+  let okB=gB.length>0&&gB.length===S.matches.filter(m=>m.g==="B").length;
+  let tA=table("A"),tB=table("B");
+  let t1A=okA&&tA[0]?tA[0].n:"Nhất A",t2A=okA&&tA[1]?tA[1].n:"Nhì A";
+  let t1B=okB&&tB[0]?tB[0].n:"Nhất B",t2B=okB&&tB[1]?tB[1].n:"Nhì B";
+  let mKO=(k)=>S.matches.find(m=>m.g==="KO"&&m.ko===k)||{hs:"",as:""};
+  let isD=(m)=>m.hs!==""&&m.hs!=null&&m.as!==""&&m.as!=null;
+  let w1=mKO("W1"),l1=mKO("L1"),l2=mKO("L2"),gf=mKO("GF");
+  let w1w=isD(w1)?(+w1.hs>+w1.as?t1A:t1B):"Thắng W1",w1l=isD(w1)?(+w1.hs<+w1.as?t1A:t1B):"Thua W1";
+  let l1w=isD(l1)?(+l1.hs>+l1.as?t2A:t2B):"Thắng L1",l2w=isD(l2)?(+l2.hs>+l2.as?l1w:w1l):"Thắng L2";
+  let gfw=isD(gf)?(+gf.hs>+gf.as?w1w:l2w):null;
+  let rMatch=(id,tit,hN,aN,m,hOk,aOk)=>{
+   let d=isD(m),hw=d&&+m.hs>+m.as,aw=d&&+m.hs<+m.as;
+   let inp=(k)=>canEdit&&hOk&&aOk?`<input id="${id}_${k}" type="number" style="width:40px;padding:2px 4px;font-size:14px;text-align:center" value="${esc(m[k])}">`:`<span class="sc">${esc(m[k])}</span>`;
+   return `<div class="match b-${id.toLowerCase()}">
+    <div class="mu" style="text-align:center;font-size:11px;padding:6px 0;background:rgba(255,255,255,.02);border-bottom:1px solid var(--bd)">${tit}</div>
+    <div class="match-team ${hw?'win':''} ${d&&!hw?'mu':''}">
+     <div class="tn">${av(hN)} <span style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(hN)}</span></div>${inp('hs')}
+    </div>
+    <div class="match-team ${aw?'win':''} ${d&&!aw?'mu':''}">
+     <div class="tn">${av(aN)} <span style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(aN)}</span></div>${inp('as')}
+    </div>
+    ${canEdit&&hOk&&aOk?`<div style="text-align:center;padding:6px;border-top:1px solid var(--bd)"><button class="b" style="padding:4px 12px;font-size:12px;border-radius:4px" onclick="updateKO('${id}')">Lưu</button></div>`:''}
+   </div>`;
+  };
+  h=`<div class="card" style="overflow:hidden">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+   <h2 style="margin:0">⚔️ Nhánh Đấu Knock-out</h2>
+   ${canEdit?`<button class="b" style="background:#e11d48;padding:6px 12px;font-size:12px" onclick="clearKO()">Xoá kết quả KO</button>`:''}
+  </div>
+  <div class="bracket-wrapper">
+   <div class="b-grid">
+    ${rMatch("W1","CHUNG KẾT NHÁNH THẮNG",t1A,t1B,w1,okA,okB)}
+    ${rMatch("L1","TRANH SUẤT NHÁNH THUA",t2A,t2B,l1,okA,okB)}
+    ${rMatch("L2","CHUNG KẾT NHÁNH THUA",l1w,w1l,l2,isD(l1),isD(w1))}
+    ${rMatch("GF","CHUNG KẾT TỔNG",w1w,l2w,gf,isD(w1),isD(l2))}
+   </div>
+  </div>
+  ${gfw?`<div class="champ"><h2>🏆 NHÀ VÔ ĐỊCH</h2><div style="font-size:24px;font-weight:800;color:var(--ac);text-shadow:var(--glow)">${av(gfw)} ${esc(gfw)}</div></div>`:''}
+  </div>`;
+ }
+ if(tab==="hl"){HL=[...S.matches.filter(m=>m.yt).map(m=>({t:`${m.h} vs ${m.a}`,u:m.yt})),...S.videos.filter(x=>!x.live).map(x=>({t:x.t,u:x.u,id:x.id}))].filter(x=>ytId(x.u));
+  h=`<div class="hg">${HL.map((x,i)=>`<div class="hc" onclick="openHL(${i})"><div class="th" style="background-image:url(https://i.ytimg.com/vi/${ytId(x.u)}/hqdefault.jpg)"><div class="pb">▶</div></div><div class="tt">${esc(x.t)}</div>${x.id&&canEdit?`<button class="x" style="position:absolute;top:6px;right:6px" onclick="event.stopPropagation();del('videos','${x.id}')">✕</button>`:""}</div>`).join("")}</div>`+(HL.length?"":'<div class="card mu">Chưa có highlight</div>')}
  if(tab==="ad"&&canEdit)h=adminUI();
- $("#app").innerHTML=h}
+ $("#app").innerHTML=liveBox()+h}
+function openHL(i){$("#mdlb").innerHTML=`<iframe class="v" src="https://www.youtube.com/embed/${ytId(HL[i].u)}?autoplay=1" allow="autoplay;fullscreen" allowfullscreen></iframe>`;$("#mdl").classList.add("on")}
+function closeHL(){$("#mdl").classList.remove("on");$("#mdlb").innerHTML=""}
 function adminUI(){return `<div class="card ad"><h2>Thêm đội</h2><div class="f"><select id="tg"><option>A</option><option>B</option></select><input id="tn" placeholder="Tên đội"><button class="b" onclick="addTeam()">Thêm</button></div>
 <div class="mu" style="margin-top:6px">${S.teams.map(t=>`${t.g}: ${esc(t.n)} <button class="x" onclick="del('teams','${t.id}')">✕</button>`).join(" · ")}</div></div>
 <div class="card ad"><h2>Thêm / cập nhật trận</h2><div class="f"><select id="mg"><option>A</option><option>B</option></select><select id="mh">${teamOpts()}</select><select id="ma">${teamOpts()}</select></div>
 <div class="f"><input id="md" type="date"><input id="mt" type="time"><input id="mhs" type="number" placeholder="Bàn đội nhà"><input id="mas" type="number" placeholder="Bàn đội khách"></div>
-<div class="f"><input id="myt" placeholder="Link YouTube (tuỳ chọn)"><button class="b" onclick="addMatch()">Lưu trận</button></div>
-<div class="mu" style="margin-top:6px">Sửa kết quả: chọn nhập lại trận cùng 2 đội + ngày sẽ ghi đè.</div></div>
+<div class="f"><input id="myt" placeholder="Link highlight YouTube (tuỳ chọn)"><button class="b" onclick="addMatch()">Lưu trận</button></div>
+<div class="mu" style="margin-top:6px">Bấm ✎ ở trận trong Lịch đấu để nạp sẵn dữ liệu rồi sửa tỉ số. Trùng 2 đội + ngày sẽ ghi đè.</div></div>
 <div class="card ad"><h2>Thống kê cầu thủ</h2><div class="f"><input id="pn" placeholder="Tên cầu thủ"><select id="pt">${teamOpts()}</select></div>
 <div class="f"><input id="pg" type="number" placeholder="Bàn" min=0><input id="pa" type="number" placeholder="Kiến tạo" min=0><input id="py" type="number" placeholder="Thẻ vàng" min=0><input id="pr" type="number" placeholder="Thẻ đỏ" min=0></div>
 <div class="f"><button class="b" onclick="addPlayer()">Cộng dồn vào cầu thủ</button></div>
 <div class="mu" style="margin-top:6px">${S.players.map(p=>`${esc(p.n)} (${esc(p.t)}) ${p.g}⚽ ${p.a}🎯 ${p.y}🟨 ${p.r}🟥 <button class="x" onclick="del('players','${p.id}')">✕</button>`).join("<br>")}</div></div>
-<div class="card ad"><h2>Thêm video YouTube</h2><div class="f"><input id="vt" placeholder="Tiêu đề"><input id="vu" placeholder="Dán link YouTube"><button class="b" onclick="addVid()">Thêm</button></div></div>`}
-const v=id=>$("#"+id).value.trim();
+<div class="card ad"><h2>Thêm highlight</h2><div class="f"><input id="vt" placeholder="Tiêu đề"><input id="vu" placeholder="Dán link YouTube"><button class="b" onclick="addVid()">Thêm</button></div></div>
+<div class="card ad"><h2>🔴 Phát trực tiếp</h2><div class="f"><input id="lt" placeholder="Tiêu đề (vd: Chung kết bảng A)"><input id="lu" placeholder="Dán link live YouTube"><button class="b" onclick="setLive()">Phát lên đầu trang</button></div>${S.videos.some(x=>x.live)?'<div class="f"><button class="b" style="background:#d33" onclick="endLive()">Kết thúc live (chuyển sang Highlight)</button></div>':""}</div>`}
 function addTeam(){if(!v("tn"))return;S.teams.push({id:uid(),g:v("tg"),n:v("tn")});save()}
 function addMatch(){const h=v("mh"),a=v("ma");if(!h||!a||h===a)return alert("Chọn 2 đội khác nhau");const yt=v("myt");if(yt&&!ytId(yt))return alert("Link YouTube không hợp lệ");
  const o={id:uid(),g:v("mg"),h,a,d:v("md"),t:v("mt"),hs:v("mhs"),as:v("mas"),yt};const i=S.matches.findIndex(m=>m.h===h&&m.a===a&&m.d===o.d);
  if(i>=0){o.id=S.matches[i].id;S.matches[i]=o}else S.matches.push(o);save()}
+function editM(id){const m=S.matches.find(x=>x.id===id);if(!m)return;tab="ad";render();[["mg","g"],["mh","h"],["ma","a"],["md","d"],["mt","t"],["mhs","hs"],["mas","as"],["myt","yt"]].forEach(([i,k])=>{$("#"+i).value=m[k]??""});scrollTo(0,0)}
 function addPlayer(){const n=v("pn"),t=v("pt");if(!n)return;let p=S.players.find(p=>p.n===n&&p.t===t);if(!p){p={id:uid(),n,t,g:0,a:0,y:0,r:0};S.players.push(p)}
  p.g+=+v("pg")||0;p.a+=+v("pa")||0;p.y+=+v("py")||0;p.r+=+v("pr")||0;save()}
-function addVid(){if(!ytId(v("vu")))return alert("Link YouTube không hợp lệ");S.videos.push({id:uid(),t:v("vt")||"Video",u:v("vu")});save()}
+function addVid(){if(!ytId(v("vu")))return alert("Link YouTube không hợp lệ");S.videos.push({id:uid(),t:v("vt")||"Highlight",u:v("vu")});save()}
+function setLive(){if(!ytId(v("lu")))return alert("Link YouTube không hợp lệ");S.videos.forEach(x=>{x.live=false});S.videos.push({id:uid(),t:v("lt")||"Trực tiếp",u:v("lu"),live:true});save()}
+function endLive(){S.videos.forEach(x=>{x.live=false});save()}
 function del(k,id){if(!confirm("Xoá mục này?"))return;S[k]=S[k].filter(x=>x.id!==id);save()}
-function norm(d){return{teams:d?.teams||[],matches:d?.matches||[],players:d?.players||[],videos:d?.videos||[]}}
-(async()=>{render();
- if(PW){try{await api({login:true});canEdit=true}catch(e){}}
- await load();setInterval(()=>{if(tab!=="ad"&&!document.hidden)load()},15000)})();
+function updateKO(id){
+ const hs=v(id+"_hs"),as=v(id+"_as");
+ if(hs===""||as==="")return alert("Vui lòng nhập đủ tỉ số");
+ if(hs===as)return alert("Knock-out không có hoà");
+ let m=S.matches.find(x=>x.g==="KO"&&x.ko===id);
+ if(m&&(m.hs!==hs||m.as!==as)){
+  if(id==="W1"||id==="L1")S.matches=S.matches.filter(x=>!(x.g==="KO"&&(x.ko==="L2"||x.ko==="GF")));
+  if(id==="L2")S.matches=S.matches.filter(x=>!(x.g==="KO"&&x.ko==="GF"));
+ }
+ if(!m){m={id:"ko_"+id,g:"KO",ko:id};S.matches.push(m)}
+ m.hs=hs;m.as=as;save();
+}
+function clearKO(){
+ if(!confirm("Xoá toàn bộ kết quả nhánh đấu?"))return;
+ S.matches=S.matches.filter(x=>x.g!=="KO");save();
+}
+(async()=>{render();if(PW){try{await api({login:true});canEdit=true}catch(e){}}
+ await load();render();setInterval(()=>{if(tab!=="ad"&&!document.hidden&&!$("#mdl").classList.contains("on"))load()},15000)})();
 </script></body></html>
