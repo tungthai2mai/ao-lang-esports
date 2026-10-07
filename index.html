@@ -568,26 +568,31 @@
 
         .b-grid {
             display: grid;
-            grid-template-areas: "w1 . gf" "l1 l2 gf";
+            grid-template-columns: auto auto;
             gap: 40px 50px;
-            min-width: 850px;
-            align-items: center
+            align-items: center;
+            min-width: 600px
         }
 
-        .b-w1 {
-            grid-area: w1
+        .b-bk1 {
+            grid-column: 1;
+            grid-row: 1
         }
 
-        .b-l1 {
-            grid-area: l1
+        .b-bk2 {
+            grid-column: 1;
+            grid-row: 3
         }
 
-        .b-l2 {
-            grid-area: l2
+        .b-3rd {
+            grid-column: 2;
+            grid-row: 4;
+            margin-top: 20px
         }
 
         .b-gf {
-            grid-area: gf
+            grid-column: 2;
+            grid-row: 2
         }
 
         .match {
@@ -640,38 +645,29 @@
             filter: grayscale(1)
         }
 
-        .b-w1::after {
+        .b-bk1::after {
             content: '';
             position: absolute;
-            right: -275px;
+            right: -25px;
             top: 50%;
-            width: 275px;
-            height: 90px;
+            width: 25px;
+            height: 140px;
             border-top: 2px solid var(--bd);
             border-right: 2px solid var(--bd);
             border-top-right-radius: 12px;
             z-index: -1
         }
 
-        .b-l1::after {
+        .b-bk2::after {
             content: '';
             position: absolute;
-            right: -50px;
-            top: 50%;
-            width: 50px;
-            height: 2px;
-            background: var(--bd);
-            z-index: -1
-        }
-
-        .b-l2::before {
-            content: '';
-            position: absolute;
-            left: -50px;
-            top: 50%;
-            width: 50px;
-            height: 2px;
-            background: var(--bd);
+            right: -25px;
+            bottom: 50%;
+            width: 25px;
+            height: 140px;
+            border-bottom: 2px solid var(--bd);
+            border-right: 2px solid var(--bd);
+            border-bottom-right-radius: 12px;
             z-index: -1
         }
 
@@ -684,27 +680,6 @@
             height: 2px;
             background: var(--bd);
             z-index: -1
-        }
-
-        .b-l2::after {
-            content: '';
-            position: absolute;
-            right: -50px;
-            top: 50%;
-            width: 50px;
-            height: 2px;
-            background: var(--bd);
-            z-index: -1
-        }
-
-        .b-w1::before {
-            content: '⬇ Thua xuống đây';
-            position: absolute;
-            right: 10px;
-            bottom: -30px;
-            font-size: 10px;
-            color: var(--mu);
-            white-space: nowrap
         }
 
         .champ {
@@ -800,10 +775,10 @@
                 let t1B = okB && tB[0] ? tB[0].n : "Nhất B", t2B = okB && tB[1] ? tB[1].n : "Nhì B";
                 let mKO = (k) => S.matches.find(m => m.g === "KO" && m.ko === k) || { hs: "", as: "" };
                 let isD = (m) => m.hs !== "" && m.hs != null && m.as !== "" && m.as != null;
-                let w1 = mKO("W1"), l1 = mKO("L1"), l2 = mKO("L2"), gf = mKO("GF");
-                let w1w = isD(w1) ? (+w1.hs > +w1.as ? t1A : t1B) : "Thắng W1", w1l = isD(w1) ? (+w1.hs < +w1.as ? t1A : t1B) : "Thua W1";
-                let l1w = isD(l1) ? (+l1.hs > +l1.as ? t2A : t2B) : "Thắng L1", l2w = isD(l2) ? (+l2.hs > +l2.as ? l1w : w1l) : "Thắng L2";
-                let gfw = isD(gf) ? (+gf.hs > +gf.as ? w1w : l2w) : null;
+                let bk1 = mKO("BK1"), bk2 = mKO("BK2"), rd3 = mKO("3RD"), gf = mKO("GF");
+                let bk1w = isD(bk1) ? (+bk1.hs > +bk1.as ? t1A : t2B) : "Thắng BK1", bk1l = isD(bk1) ? (+bk1.hs < +bk1.as ? t1A : t2B) : "Thua BK1";
+                let bk2w = isD(bk2) ? (+bk2.hs > +bk2.as ? t1B : t2A) : "Thắng BK2", bk2l = isD(bk2) ? (+bk2.hs < +bk2.as ? t1B : t2A) : "Thua BK2";
+                let gfw = isD(gf) ? (+gf.hs > +gf.as ? bk1w : bk2w) : null;
                 let rMatch = (id, tit, hN, aN, m, hOk, aOk) => {
                     let d = isD(m), hw = d && +m.hs > +m.as, aw = d && +m.hs < +m.as;
                     let inp = (k) => canEdit && hOk && aOk ? `<input id="${id}_${k}" type="number" style="width:40px;padding:2px 4px;font-size:14px;text-align:center" value="${esc(m[k])}">` : `<span class="sc">${esc(m[k])}</span>`;
@@ -825,10 +800,10 @@
   </div>
   <div class="bracket-wrapper">
    <div class="b-grid">
-    ${rMatch("W1", "CHUNG KẾT NHÁNH THẮNG", t1A, t1B, w1, okA, okB)}
-    ${rMatch("L1", "TRANH SUẤT NHÁNH THUA", t2A, t2B, l1, okA, okB)}
-    ${rMatch("L2", "CHUNG KẾT NHÁNH THUA", l1w, w1l, l2, isD(l1), isD(w1))}
-    ${rMatch("GF", "CHUNG KẾT TỔNG", w1w, l2w, gf, isD(w1), isD(l2))}
+    ${rMatch("BK1", "BÁN KẾT 1", t1A, t2B, bk1, okA, okB)}
+    ${rMatch("BK2", "BÁN KẾT 2", t1B, t2A, bk2, okB, okA)}
+    ${rMatch("3RD", "TRANH HẠNG 3", bk1l, bk2l, rd3, isD(bk1), isD(bk2))}
+    ${rMatch("GF", "CHUNG KẾT", bk1w, bk2w, gf, isD(bk1), isD(bk2))}
    </div>
   </div>
   ${gfw ? `<div class="champ"><h2>🏆 NHÀ VÔ ĐỊCH</h2><div style="font-size:24px;font-weight:800;color:var(--ac);text-shadow:var(--glow)">${av(gfw)} ${esc(gfw)}</div></div>` : ''}
@@ -884,8 +859,7 @@
             if (+hs === +as) return alert("Knock-out không có hoà");
             let m = S.matches.find(x => x.g === "KO" && x.ko === id);
             if (m && (m.hs !== hs || m.as !== as)) {
-                if (id === "W1" || id === "L1") S.matches = S.matches.filter(x => !(x.g === "KO" && (x.ko === "L2" || x.ko === "GF")));
-                if (id === "L2") S.matches = S.matches.filter(x => !(x.g === "KO" && x.ko === "GF"));
+                if (id === "BK1" || id === "BK2") S.matches = S.matches.filter(x => !(x.g === "KO" && (x.ko === "3RD" || x.ko === "GF")));
             }
             if (!m) { m = { id: "ko_" + id, g: "KO", ko: id }; S.matches.push(m) }
             m.hs = hs; m.as = as; save();
