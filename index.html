@@ -568,27 +568,18 @@
 
         .b-grid {
             display: grid;
-            grid-template-columns: auto auto;
-            gap: 40px 50px;
+            grid-template-columns: auto auto auto;
+            gap: 40px 60px;
             align-items: center;
-            min-width: 600px
+            min-width: 850px
         }
 
-        .b-bk1 {
-            grid-column: 1;
-            grid-row: 1
-        }
-
-        .b-bk2 {
-            grid-column: 1;
-            grid-row: 3
-        }
-
-        .b-3rd {
-            grid-column: 2;
-            grid-row: 4;
-            margin-top: 20px
-        }
+        .b-bk1 { grid-column: 1; grid-row: 1 }
+        .b-bk2 { grid-column: 1; grid-row: 2 }
+        .b-w1  { grid-column: 2; grid-row: 1; position: relative }
+        .b-l1  { grid-column: 2; grid-row: 2; position: relative }
+        .b-gf  { grid-column: 3; grid-row: 1; position: relative }
+        .b-l2  { grid-column: 3; grid-row: 2; position: relative }
 
         .b-gf {
             grid-column: 2;
@@ -645,41 +636,27 @@
             filter: grayscale(1)
         }
 
+        .b-w1::after {
+            content: ''; position: absolute; right: -60px; top: 50%; width: 60px; height: 2px; background: var(--bd); z-index: -1
+        }
+        .b-w1::before {
+            content: ''; position: absolute; right: -30px; top: 50%; width: 30px; height: calc(100% + 40px);
+            border-top: 2px solid var(--bd); border-right: 2px solid var(--bd); border-bottom-right-radius: 12px; border-top-right-radius: 12px; z-index: -1
+        }
+        .b-l1::after {
+            content: ''; position: absolute; right: -30px; top: 50%; width: 30px; height: 2px; background: var(--bd); z-index: -1
+        }
+        .b-l2::before {
+            content: ''; position: absolute; left: -30px; top: 50%; width: 30px; height: 2px; background: var(--bd); z-index: -1
+        }
+        .b-l2::after {
+            content: ''; position: absolute; left: 50%; top: -40px; width: 2px; height: 40px; background: var(--bd); z-index: -1
+        }
         .b-bk1::after {
-            content: '';
-            position: absolute;
-            right: -25px;
-            top: 50%;
-            width: 25px;
-            height: 140px;
-            border-top: 2px solid var(--bd);
-            border-right: 2px solid var(--bd);
-            border-top-right-radius: 12px;
-            z-index: -1
+            content: 'Thắng ➡ Trận 1  |  Thua ➡ Trận 2'; position: absolute; right: 10px; bottom: -24px; font-size: 11px; color: var(--mu); white-space: nowrap
         }
-
         .b-bk2::after {
-            content: '';
-            position: absolute;
-            right: -25px;
-            bottom: 50%;
-            width: 25px;
-            height: 140px;
-            border-bottom: 2px solid var(--bd);
-            border-right: 2px solid var(--bd);
-            border-bottom-right-radius: 12px;
-            z-index: -1
-        }
-
-        .b-gf::before {
-            content: '';
-            position: absolute;
-            left: -25px;
-            top: 50%;
-            width: 25px;
-            height: 2px;
-            background: var(--bd);
-            z-index: -1
+            content: 'Thắng ➡ Trận 1  |  Thua ➡ Trận 2'; position: absolute; right: 10px; bottom: -24px; font-size: 11px; color: var(--mu); white-space: nowrap
         }
 
         .champ {
@@ -775,10 +752,18 @@
                 let t1B = okB && tB[0] ? tB[0].n : "Nhất B", t2B = okB && tB[1] ? tB[1].n : "Nhì B";
                 let mKO = (k) => S.matches.find(m => m.g === "KO" && m.ko === k) || { hs: "", as: "" };
                 let isD = (m) => m.hs !== "" && m.hs != null && m.as !== "" && m.as != null;
-                let bk1 = mKO("BK1"), bk2 = mKO("BK2"), rd3 = mKO("3RD"), gf = mKO("GF");
+                let bk1 = mKO("BK1"), bk2 = mKO("BK2"), w1 = mKO("W1"), l1 = mKO("L1"), l2 = mKO("L2"), gf = mKO("GF");
                 let bk1w = isD(bk1) ? (+bk1.hs > +bk1.as ? t1A : t2B) : "Thắng BK1", bk1l = isD(bk1) ? (+bk1.hs < +bk1.as ? t1A : t2B) : "Thua BK1";
                 let bk2w = isD(bk2) ? (+bk2.hs > +bk2.as ? t1B : t2A) : "Thắng BK2", bk2l = isD(bk2) ? (+bk2.hs < +bk2.as ? t1B : t2A) : "Thua BK2";
-                let gfw = isD(gf) ? (+gf.hs > +gf.as ? bk1w : bk2w) : null;
+                
+                let w1w = isD(w1) ? (+w1.hs > +w1.as ? bk1w : bk2w) : "Thắng Trận 1";
+                let w1l = isD(w1) ? (+w1.hs < +w1.as ? bk1w : bk2w) : "Thua Trận 1";
+                
+                let l1w = isD(l1) ? (+l1.hs > +l1.as ? bk1l : bk2l) : "Thắng Trận 2";
+                
+                let l2w = isD(l2) ? (+l2.hs > +l2.as ? l1w : w1l) : "Thắng Trận 3";
+                
+                let gfw = isD(gf) ? (+gf.hs > +gf.as ? w1w : l2w) : null;
                 let rMatch = (id, tit, hN, aN, m, hOk, aOk) => {
                     let d = isD(m), hw = d && +m.hs > +m.as, aw = d && +m.hs < +m.as;
                     let inp = (k) => canEdit && hOk && aOk ? `<input id="${id}_${k}" type="number" style="width:40px;padding:2px 4px;font-size:14px;text-align:center" value="${esc(m[k])}">` : `<span class="sc">${esc(m[k])}</span>`;
@@ -802,8 +787,10 @@
    <div class="b-grid">
     ${rMatch("BK1", "BÁN KẾT 1", t1A, t2B, bk1, okA, okB)}
     ${rMatch("BK2", "BÁN KẾT 2", t1B, t2A, bk2, okB, okA)}
-    ${rMatch("3RD", "TRANH HẠNG 3", bk1l, bk2l, rd3, isD(bk1), isD(bk2))}
-    ${rMatch("GF", "CHUNG KẾT", bk1w, bk2w, gf, isD(bk1), isD(bk2))}
+    ${rMatch("W1", "TRẬN 1 (THẮNG BK)", bk1w, bk2w, w1, isD(bk1), isD(bk2))}
+    ${rMatch("L1", "TRẬN 2 (THUA BK)", bk1l, bk2l, l1, isD(bk1), isD(bk2))}
+    ${rMatch("L2", "TRẬN 3 (TRANH VÉ VỚT)", l1w, w1l, l2, isD(l1), isD(w1))}
+    ${rMatch("GF", "CHUNG KẾT TỔNG", w1w, l2w, gf, isD(w1), isD(l2))}
    </div>
   </div>
   ${gfw ? `<div class="champ"><h2>🏆 NHÀ VÔ ĐỊCH</h2><div style="font-size:24px;font-weight:800;color:var(--ac);text-shadow:var(--glow)">${av(gfw)} ${esc(gfw)}</div></div>` : ''}
@@ -859,7 +846,9 @@
             if (+hs === +as) return alert("Knock-out không có hoà");
             let m = S.matches.find(x => x.g === "KO" && x.ko === id);
             if (m && (m.hs !== hs || m.as !== as)) {
-                if (id === "BK1" || id === "BK2") S.matches = S.matches.filter(x => !(x.g === "KO" && (x.ko === "3RD" || x.ko === "GF")));
+                if (id === "BK1" || id === "BK2") S.matches = S.matches.filter(x => !(x.g === "KO" && ["W1","L1","L2","GF"].includes(x.ko)));
+                if (id === "W1" || id === "L1") S.matches = S.matches.filter(x => !(x.g === "KO" && ["L2","GF"].includes(x.ko)));
+                if (id === "L2") S.matches = S.matches.filter(x => !(x.g === "KO" && x.ko === "GF"));
             }
             if (!m) { m = { id: "ko_" + id, g: "KO", ko: id }; S.matches.push(m) }
             m.hs = hs; m.as = as; save();
