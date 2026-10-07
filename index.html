@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="vi"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Quản lý giải đấu Esports</title>
+<style>
+:root{--bg:#f5f6fa;--card:#fff;--tx:#1a1d2e;--mu:#667;--ac:#6c3df0;--bd:#e3e5ef;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10121c;--card:#1a1d2e;--tx:#eef0fa;--mu:#9aa;--bd:#2a2e44}}
+:root[data-theme="dark"]{--bg:#10121c;--card:#1a1d2e;--tx:#eef0fa;--mu:#9aa;--bd:#2a2e44}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:15px system-ui,sans-serif}
+header{background:var(--ac);color:#fff;padding:16px}header h1{margin:0;font-size:20px}
+nav{display:flex;gap:6px;overflow-x:auto;padding:10px 12px;background:var(--card);border-bottom:1px solid var(--bd)}
+nav button{border:0;background:none;color:var(--mu);padding:8px 12px;border-radius:8px;white-space:nowrap;font:inherit;cursor:pointer}
+nav button.on{background:var(--ac);color:#fff}
+main{max-width:900px;margin:auto;padding:12px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px;margin-bottom:12px}
+h2{margin:0 0 8px;font-size:16px}.t{overflow-x:auto}table{width:100%;border-collapse:collapse}
+th,td{padding:7px 6px;text-align:center;border-bottom:1px solid var(--bd)}th:nth-child(2),td:nth-child(2){text-align:left}th{color:var(--mu);font-size:12px}
+.m{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--bd);flex-wrap:wrap}
+.m .d{color:var(--mu);font-size:12px;width:100%}.m b{flex:1;min-width:90px}.sc{background:var(--bg);padding:4px 10px;border-radius:8px;font-weight:700}
+.v{aspect-ratio:16/9;width:100%;border:0;border-radius:10px;background:#000}
+input,select,button.b{font:inherit;padding:8px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx)}
+button.b{background:var(--ac);color:#fff;border:0;cursor:pointer}button.x{border:0;background:none;color:#d33;cursor:pointer}
+.f{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.f input,.f select{flex:1;min-width:110px}
+.sec{display:none}.sec.on{display:block}.mu{color:var(--mu);font-size:13px}.ad{border:2px dashed var(--ac)}
+</style></head><body>
+<header><h1>🎮 Giải đấu Esports</h1><div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><div id="st" class="mu" style="color:#fffc"></div><button id="lg" class="b" style="background:#fff3;padding:6px 10px"></button></div></header>
+<nav id="nav"></nav><main id="app"></main>
+<script>
+const TABS=[["lich","Lịch đấu"],["bxh","Bảng đấu"],["sut","Vua phá lưới"],["kt","Kiến tạo"],["the","Thẻ phạt"],["vid","Video"]];
+let S={teams:[],matches:[],players:[],videos:[]},tab="lich",ref=null,canEdit=false,saveOk=false;
+const $=s=>document.querySelector(s),esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const uid=()=>Math.random().toString(36).slice(2,9);
+function ytId(u){const m=String(u).match(/(?:v=|youtu\.be\/|embed\/|live\/|shorts\/)([\w-]{11})/);return m?m[1]:null}
+function ytBox(u){const i=ytId(u);return i?`<iframe class="v" src="https://www.youtube.com/embed/${i}" allowfullscreen loading="lazy"></iframe><div class="mu"><a href="https://youtu.be/${i}" target="_blank" rel="noopener">Mở trên YouTube</a></div>`:""}
+let PW=sessionStorage.getItem("pw")||"";
+async function api(body){const r=await fetch("/api/state",{method:"POST",headers:{"Content-Type":"application/json","x-admin-password":PW},body:JSON.stringify(body)});
+ if(r.status===401){PW="";sessionStorage.removeItem("pw");canEdit=false;if(tab==="ad")tab="lich";render();throw new Error("Sai mật khẩu hoặc hết phiên")}
+ if(!r.ok){const j=await r.json().catch(()=>({}));throw new Error(j.error||"Lỗi "+r.status)}return r.json()}
+async function save(){render();try{await api({state:S})}catch(e){alert("Không lưu được: "+e.message)}}
+async function login(){if(canEdit){PW="";sessionStorage.removeItem("pw");canEdit=false;if(tab==="ad")tab="lich";return render()}
+ const p=prompt("Mật khẩu admin:");if(!p)return;PW=p;try{await api({login:true});sessionStorage.setItem("pw",p);canEdit=true;render()}catch(e){alert(e.message)}}
+async function load(){try{const r=await fetch("/api/state",{cache:"no-store"});if(!r.ok)throw 0;S=norm(await r.json());$("#st").textContent=canEdit?"Chế độ quản trị":"Đang xem";render()}catch(e){$("#st").textContent="Không tải được dữ liệu"}}
+function table(g){const r={};S.teams.filter(t=>t.g===g).forEach(t=>r[t.n]={n:t.n,p:0,w:0,d:0,l:0,gf:0,ga:0,pt:0});
+ S.matches.filter(m=>m.g===g&&m.hs!==""&&m.as!==""&&m.hs!=null).forEach(m=>{const a=r[m.h],b=r[m.a];if(!a||!b)return;const x=+m.hs,y=+m.as;
+ a.p++;b.p++;a.gf+=x;a.ga+=y;b.gf+=y;b.ga+=x;if(x>y){a.w++;b.l++;a.pt+=3}else if(x<y){b.w++;a.l++;b.pt+=3}else{a.d++;b.d++;a.pt++;b.pt++}});
+ return Object.values(r).sort((a,b)=>b.pt-a.pt||(b.gf-b.ga)-(a.gf-a.ga)||b.gf-a.gf)}
+const teamOpts=()=>S.teams.map(t=>`<option>${esc(t.n)}</option>`).join("");
+function rank(k,label){const l=[...S.players].filter(p=>p[k]>0).sort((a,b)=>b[k]-a[k]);
+ return `<div class="card"><h2>${label}</h2><div class="t"><table><tr><th>#</th><th>Cầu thủ</th><th>Đội</th><th>SL</th></tr>${l.map((p,i)=>`<tr><td>${i+1}</td><td>${esc(p.n)}</td><td>${esc(p.t)}</td><td><b>${p[k]}</b></td></tr>`).join("")||'<tr><td colspan=4 class="mu">Chưa có dữ liệu</td></tr>'}</table></div></div>`}
+function admin(h){return canEdit?h:""}
+function render(){
+ $("#lg").textContent=canEdit?"Đăng xuất":"🔑 Đăng nhập admin";$("#lg").onclick=login;
+ $("#nav").innerHTML=TABS.map(([k,l])=>`<button class="${k===tab?"on":""}" onclick="tab='${k}';render()">${l}</button>`).join("")+(canEdit?`<button class="${tab==="ad"?"on":""}" onclick="tab='ad';render()">⚙️ Quản trị</button>`:"");
+ let h="";
+ if(tab==="lich"){const l=[...S.matches].sort((a,b)=>(a.d+a.t).localeCompare(b.d+b.t));
+  h=`<div class="card"><h2>Lịch thi đấu</h2>${l.map(m=>`<div class="m"><div class="d">${esc(m.d)} ${esc(m.t)} · Bảng ${esc(m.g)}</div><b style="text-align:right">${esc(m.h)}</b><span class="sc">${m.hs===""||m.hs==null?"vs":esc(m.hs)+" - "+esc(m.as)}</span><b>${esc(m.a)}</b>${m.yt?`<a href="#" onclick="tab='vid';render();return false">▶</a>`:""}${admin(`<button class="x" onclick="del('matches','${m.id}')">✕</button>`)}</div>`).join("")||'<div class="mu">Chưa có trận đấu</div>'}</div>`}
+ if(tab==="bxh")h=["A","B"].map(g=>`<div class="card"><h2>Bảng ${g}</h2><div class="t"><table><tr><th>#</th><th>Đội</th><th>Trận</th><th>T</th><th>H</th><th>B</th><th>HS</th><th>Điểm</th></tr>${table(g).map((r,i)=>`<tr><td>${i+1}</td><td>${esc(r.n)}</td><td>${r.p}</td><td>${r.w}</td><td>${r.d}</td><td>${r.l}</td><td>${r.gf-r.ga}</td><td><b>${r.pt}</b></td></tr>`).join("")||'<tr><td colspan=8 class="mu">Chưa có đội</td></tr>'}</table></div></div>`).join("");
+ if(tab==="sut")h=rank("g","⚽ Vua phá lưới");
+ if(tab==="kt")h=rank("a","🎯 Kiến tạo");
+ if(tab==="the"){const l=S.players.filter(p=>p.y||p.r);h=`<div class="card"><h2>🟨🟥 Thẻ phạt</h2><div class="t"><table><tr><th>#</th><th>Cầu thủ</th><th>Đội</th><th>🟨</th><th>🟥</th></tr>${l.sort((a,b)=>b.r-a.r||b.y-a.y).map((p,i)=>`<tr><td>${i+1}</td><td>${esc(p.n)}</td><td>${esc(p.t)}</td><td>${p.y}</td><td>${p.r}</td></tr>`).join("")||'<tr><td colspan=5 class="mu">Chưa có thẻ</td></tr>'}</table></div></div>`}
+ if(tab==="vid"){const v=[...S.matches.filter(m=>m.yt).map(m=>({t:`${m.h} vs ${m.a}`,u:m.yt})),...S.videos.map(x=>({t:x.t,u:x.u,id:x.id}))];
+  h=v.map(x=>`<div class="card"><h2>${esc(x.t)} ${x.id&&canEdit?`<button class="x" onclick="del('videos','${x.id}')">✕</button>`:""}</h2>${ytBox(x.u)||'<div class="mu">Link YouTube không hợp lệ</div>'}</div>`).join("")||'<div class="card mu">Chưa có video</div>'}
+ if(tab==="ad"&&canEdit)h=adminUI();
+ $("#app").innerHTML=h}
+function adminUI(){return `<div class="card ad"><h2>Thêm đội</h2><div class="f"><select id="tg"><option>A</option><option>B</option></select><input id="tn" placeholder="Tên đội"><button class="b" onclick="addTeam()">Thêm</button></div>
+<div class="mu" style="margin-top:6px">${S.teams.map(t=>`${t.g}: ${esc(t.n)} <button class="x" onclick="del('teams','${t.id}')">✕</button>`).join(" · ")}</div></div>
+<div class="card ad"><h2>Thêm / cập nhật trận</h2><div class="f"><select id="mg"><option>A</option><option>B</option></select><select id="mh">${teamOpts()}</select><select id="ma">${teamOpts()}</select></div>
+<div class="f"><input id="md" type="date"><input id="mt" type="time"><input id="mhs" type="number" placeholder="Bàn đội nhà"><input id="mas" type="number" placeholder="Bàn đội khách"></div>
+<div class="f"><input id="myt" placeholder="Link YouTube (tuỳ chọn)"><button class="b" onclick="addMatch()">Lưu trận</button></div>
+<div class="mu" style="margin-top:6px">Sửa kết quả: chọn nhập lại trận cùng 2 đội + ngày sẽ ghi đè.</div></div>
+<div class="card ad"><h2>Thống kê cầu thủ</h2><div class="f"><input id="pn" placeholder="Tên cầu thủ"><select id="pt">${teamOpts()}</select></div>
+<div class="f"><input id="pg" type="number" placeholder="Bàn" min=0><input id="pa" type="number" placeholder="Kiến tạo" min=0><input id="py" type="number" placeholder="Thẻ vàng" min=0><input id="pr" type="number" placeholder="Thẻ đỏ" min=0></div>
+<div class="f"><button class="b" onclick="addPlayer()">Cộng dồn vào cầu thủ</button></div>
+<div class="mu" style="margin-top:6px">${S.players.map(p=>`${esc(p.n)} (${esc(p.t)}) ${p.g}⚽ ${p.a}🎯 ${p.y}🟨 ${p.r}🟥 <button class="x" onclick="del('players','${p.id}')">✕</button>`).join("<br>")}</div></div>
+<div class="card ad"><h2>Thêm video YouTube</h2><div class="f"><input id="vt" placeholder="Tiêu đề"><input id="vu" placeholder="Dán link YouTube"><button class="b" onclick="addVid()">Thêm</button></div></div>`}
+const v=id=>$("#"+id).value.trim();
+function addTeam(){if(!v("tn"))return;S.teams.push({id:uid(),g:v("tg"),n:v("tn")});save()}
+function addMatch(){const h=v("mh"),a=v("ma");if(!h||!a||h===a)return alert("Chọn 2 đội khác nhau");const yt=v("myt");if(yt&&!ytId(yt))return alert("Link YouTube không hợp lệ");
+ const o={id:uid(),g:v("mg"),h,a,d:v("md"),t:v("mt"),hs:v("mhs"),as:v("mas"),yt};const i=S.matches.findIndex(m=>m.h===h&&m.a===a&&m.d===o.d);
+ if(i>=0){o.id=S.matches[i].id;S.matches[i]=o}else S.matches.push(o);save()}
+function addPlayer(){const n=v("pn"),t=v("pt");if(!n)return;let p=S.players.find(p=>p.n===n&&p.t===t);if(!p){p={id:uid(),n,t,g:0,a:0,y:0,r:0};S.players.push(p)}
+ p.g+=+v("pg")||0;p.a+=+v("pa")||0;p.y+=+v("py")||0;p.r+=+v("pr")||0;save()}
+function addVid(){if(!ytId(v("vu")))return alert("Link YouTube không hợp lệ");S.videos.push({id:uid(),t:v("vt")||"Video",u:v("vu")});save()}
+function del(k,id){if(!confirm("Xoá mục này?"))return;S[k]=S[k].filter(x=>x.id!==id);save()}
+function norm(d){return{teams:d?.teams||[],matches:d?.matches||[],players:d?.players||[],videos:d?.videos||[]}}
+(async()=>{render();
+ if(PW){try{await api({login:true});canEdit=true}catch(e){}}
+ await load();setInterval(()=>{if(tab!=="ad"&&!document.hidden)load()},15000)})();
+</script></body></html>
