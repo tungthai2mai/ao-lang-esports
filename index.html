@@ -447,7 +447,7 @@
             border: 1px solid #ff3366
         }
 
-        .v {
+        .yt-v {
             aspect-ratio: 16/9;
             width: 100%;
             border: 0;
@@ -743,7 +743,7 @@
         const $ = s => document.querySelector(s), esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
         const uid = () => Math.random().toString(36).slice(2, 9), v = id => $("#" + id).value.trim();
         function ytId(u) { const m = String(u).match(/(?:v=|youtu\.be\/|embed\/|live\/|shorts\/)([\w-]{11})/); return m ? m[1] : null }
-        function ytBox(u) { const i = ytId(u); return i ? `<iframe class="v" src="https://www.youtube.com/embed/${i}" allowfullscreen loading="lazy"></iframe><div class="mu" style="margin-top:6px"><a href="https://youtu.be/${i}" target="_blank" rel="noopener">Mở trên YouTube</a></div>` : "" }
+        function ytBox(u) { const i = ytId(u); return i ? `<iframe class="yt-v" src="https://www.youtube.com/embed/${i}" allowfullscreen loading="lazy"></iframe><div class="mu" style="margin-top:6px"><a href="https://youtu.be/${i}" target="_blank" rel="noopener">Mở trên YouTube</a></div>` : "" }
         function av(n) { let h = 0; for (const c of String(n)) h = (h * 31 + c.charCodeAt(0)) % 360; const w = String(n).trim().split(/\s+/); const i = (w.length > 1 ? w[0][0] + w[w.length - 1][0] : String(n).slice(0, 2)).toUpperCase(); return `<span class="av" style="background:hsl(${h} 65% 48%)">${esc(i)}</span>` }
         let PW = sessionStorage.getItem("pw") || "";
         async function api(body) {
@@ -841,7 +841,7 @@
             if (tab === "ad" && canEdit) h = adminUI();
             $("#app").innerHTML = liveBox() + h
         }
-        function openHL(i) { $("#mdlb").innerHTML = `<iframe class="v" src="https://www.youtube.com/embed/${ytId(HL[i].u)}?autoplay=1" allow="autoplay;fullscreen" allowfullscreen></iframe>`; $("#mdl").classList.add("on") }
+        function openHL(i) { $("#mdlb").innerHTML = `<iframe class="yt-v" src="https://www.youtube.com/embed/${ytId(HL[i].u)}?autoplay=1" allow="autoplay;fullscreen" allowfullscreen></iframe>`; $("#mdl").classList.add("on") }
         function closeHL() { $("#mdl").classList.remove("on"); $("#mdlb").innerHTML = "" }
         function adminUI() {
             return `<div class="card ad"><h2>Thêm đội</h2><div class="f"><select id="tg"><option>A</option><option>B</option></select><input id="tn" placeholder="Tên đội"><button class="b" onclick="addTeam()">Thêm</button></div>
