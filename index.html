@@ -744,7 +744,7 @@
         const uid = () => Math.random().toString(36).slice(2, 9), v = id => $("#" + id).value.trim();
         function ytId(u) { const m = String(u).match(/(?:v=|youtu\.be\/|embed\/|live\/|shorts\/)([\w-]{11})/); return m ? m[1] : null }
         function ytBox(u) { const i = ytId(u); return i ? `<iframe class="yt-v" src="https://www.youtube.com/embed/${i}" allowfullscreen loading="lazy"></iframe><div class="mu" style="margin-top:6px"><a href="https://youtu.be/${i}" target="_blank" rel="noopener">Mở trên YouTube</a></div>` : "" }
-        function av(n) { let h = 0; for (const c of String(n)) h = (h * 31 + c.charCodeAt(0)) % 360; const w = String(n).trim().split(/\s+/); const i = (w.length > 1 ? w[0][0] + w[w.length - 1][0] : String(n).slice(0, 2)).toUpperCase(); return `<span class="av" style="background:hsl(${h} 65% 48%)">${esc(i)}</span>` }
+        function av(n, isP=false, tN="") { let L = null; if(isP){ const p = S.players.find(x=>x.n===n&&(tN===""||x.t===tN)); if(p&&p.l) L=p.l; } else { const t = S.teams.find(x=>x.n===n); if(t&&t.l) L=t.l; } if(L) return `<img class="av" src="${esc(L)}" style="object-fit:cover;background:#fff">`; let h = 0; for (const c of String(n)) h = (h * 31 + c.charCodeAt(0)) % 360; const w = String(n).trim().split(/\s+/); const i = (w.length > 1 ? w[0][0] + w[w.length - 1][0] : String(n).slice(0, 2)).toUpperCase(); return `<span class="av" style="background:hsl(${h} 65% 48%)">${esc(i)}</span>` }
         let PW = sessionStorage.getItem("pw") || "";
         async function api(body) {
             const r = await fetch("/api/state", { method: "POST", headers: { "Content-Type": "application/json", "x-admin-password": PW }, body: JSON.stringify(body) });
@@ -773,7 +773,7 @@
         }
         const teamOpts = () => S.teams.map(t => `<option>${esc(t.n)}</option>`).join("");
         const medal = i => ["🥇", "🥈", "🥉"][i] || i + 1;
-        function pcard(title, list, val) { return `<div class="card"><h2>${title}</h2>${list.slice(0, 10).map((p, i) => `<div class="pl"><div class="rk">${medal(i)}</div>${av(p.n)}<div class="n"><b>${esc(p.n)}</b><span class="mu">${esc(p.t)}</span></div><div class="v">${val(p)}</div></div>`).join("") || '<div class="mu">Chưa có dữ liệu</div>'}</div>` }
+        function pcard(title, list, val) { return `<div class="card"><h2>${title}</h2>${list.slice(0, 10).map((p, i) => `<div class="pl"><div class="rk">${medal(i)}</div>${av(p.n, true, p.t)}<div class="n"><b>${esc(p.n)}</b><span class="mu">${esc(p.t)}</span></div><div class="v">${val(p)}</div></div>`).join("") || '<div class="mu">Chưa có dữ liệu</div>'}</div>` }
         function liveBox() { const l = S.videos.find(x => x.live); return l ? `<div class="card live"><h2><span>🔴 TRỰC TIẾP</span> ${esc(l.t)}</h2>${ytBox(l.u)}</div>` : "" }
         function fmtD(d) { if (!d) return "Chưa xếp lịch"; const p = d.split("-"); return p.length === 3 ? `${p[2]}/${p[1]}/${p[0]}` : d }
         function render() {
@@ -844,29 +844,35 @@
         function openHL(i) { $("#mdlb").innerHTML = `<iframe class="yt-v" src="https://www.youtube.com/embed/${ytId(HL[i].u)}?autoplay=1" allow="autoplay;fullscreen" allowfullscreen></iframe>`; $("#mdl").classList.add("on") }
         function closeHL() { $("#mdl").classList.remove("on"); $("#mdlb").innerHTML = "" }
         function adminUI() {
-            return `<div class="card ad"><h2>Thêm đội</h2><div class="f"><select id="tg"><option>A</option><option>B</option></select><input id="tn" placeholder="Tên đội"><button class="b" onclick="addTeam()">Thêm</button></div>
-<div class="mu" style="margin-top:6px">${S.teams.map(t => `${t.g}: ${esc(t.n)} <button class="x" onclick="del('teams','${t.id}')">✕</button>`).join(" · ")}</div></div>
+            return `<div class="card ad"><h2>Thêm / Sửa đội</h2><div class="f"><select id="tg"><option>A</option><option>B</option></select><input id="tn" placeholder="Tên đội"><input id="tl" placeholder="Link Logo (Tuỳ chọn)"><button class="b" onclick="addTeam()">Lưu</button></div>
+<div class="mu" style="margin-top:6px">${S.teams.map(t => `${t.g}: ${esc(t.n)} <button class="ed" onclick="editT('${t.id}')">✎</button> <button class="x" onclick="del('teams','${t.id}')">✕</button>`).join(" · ")}</div></div>
 <div class="card ad"><h2>Thêm / cập nhật trận</h2><div class="f"><select id="mg"><option>A</option><option>B</option></select><select id="mh">${teamOpts()}</select><select id="ma">${teamOpts()}</select></div>
 <div class="f"><input id="md" type="date"><input id="mt" type="time"><input id="mhs" type="number" placeholder="Bàn đội nhà"><input id="mas" type="number" placeholder="Bàn đội khách"></div>
 <div class="f"><input id="myt" placeholder="Link highlight YouTube (tuỳ chọn)"><button class="b" onclick="addMatch()">Lưu trận</button></div>
 <div class="mu" style="margin-top:6px">Bấm ✎ ở trận trong Lịch đấu để nạp sẵn dữ liệu rồi sửa tỉ số. Trùng 2 đội + ngày sẽ ghi đè.</div></div>
-<div class="card ad"><h2>Thống kê cầu thủ</h2><div class="f"><input id="pn" placeholder="Tên cầu thủ"><select id="pt">${teamOpts()}</select></div>
+<div class="card ad"><h2>Thống kê cầu thủ</h2><div class="f"><input id="pn" placeholder="Tên cầu thủ"><select id="pt">${teamOpts()}</select><input id="pl" placeholder="Link ảnh (Tuỳ chọn)"></div>
 <div class="f"><input id="pg" type="number" placeholder="Bàn" min=0><input id="pa" type="number" placeholder="Kiến tạo" min=0><input id="py" type="number" placeholder="Thẻ vàng" min=0><input id="pr" type="number" placeholder="Thẻ đỏ" min=0></div>
-<div class="f"><button class="b" onclick="addPlayer()">Cộng dồn vào cầu thủ</button></div>
-<div class="mu" style="margin-top:6px">${S.players.map(p => `${esc(p.n)} (${esc(p.t)}) ${p.g}⚽ ${p.a}🎯 ${p.y}🟨 ${p.r}🟥 <button class="x" onclick="del('players','${p.id}')">✕</button>`).join("<br>")}</div></div>
+<div class="f"><button class="b" onclick="addPlayer()">Cộng dồn / Đổi ảnh</button><button class="b" onclick="setPlayer()" style="background:var(--card);color:var(--tx)">Ghi đè số liệu</button></div>
+<div class="mu" style="margin-top:6px">${S.players.map(p => `${esc(p.n)} (${esc(p.t)}) ${p.g}⚽ ${p.a}🎯 ${p.y}🟨 ${p.r}🟥 <button class="ed" onclick="editP('${p.id}')">✎</button> <button class="x" onclick="del('players','${p.id}')">✕</button>`).join("<br>")}</div></div>
 <div class="card ad"><h2>Thêm highlight</h2><div class="f"><input id="vt" placeholder="Tiêu đề"><input id="vu" placeholder="Dán link YouTube"><button class="b" onclick="addVid()">Thêm</button></div></div>
 <div class="card ad"><h2>🔴 Phát trực tiếp</h2><div class="f"><input id="lt" placeholder="Tiêu đề (vd: Chung kết bảng A)"><input id="lu" placeholder="Dán link live YouTube"><button class="b" onclick="setLive()">Phát lên đầu trang</button></div>${S.videos.some(x => x.live) ? '<div class="f"><button class="b" style="background:#d33" onclick="endLive()">Kết thúc live (chuyển sang Highlight)</button></div>' : ""}</div>`
         }
-        function addTeam() { if (!v("tn")) return; S.teams.push({ id: uid(), g: v("tg"), n: v("tn") }); save() }
+        function editT(id) { const t = S.teams.find(x => x.id === id); if(!t)return; $("#tg").value=t.g; $("#tn").value=t.n; $("#tl").value=t.l||""; }
+        function addTeam() { const n = v("tn"); if (!n) return; let t = S.teams.find(x => x.n === n); if(t) { t.g = v("tg"); t.l = v("tl"); } else { S.teams.push({ id: uid(), g: v("tg"), n, l: v("tl") }); } save() }
         function addMatch() {
             const h = v("mh"), a = v("ma"); if (!h || !a || h === a) return alert("Chọn 2 đội khác nhau"); const yt = v("myt"); if (yt && !ytId(yt)) return alert("Link YouTube không hợp lệ");
             const o = { id: uid(), g: v("mg"), h, a, d: v("md"), t: v("mt"), hs: v("mhs"), as: v("mas"), yt }; const i = S.matches.findIndex(m => m.h === h && m.a === a && m.d === o.d);
             if (i >= 0) { o.id = S.matches[i].id; S.matches[i] = o } else S.matches.push(o); save()
         }
         function editM(id) { const m = S.matches.find(x => x.id === id); if (!m) return; tab = "ad"; render();[["mg", "g"], ["mh", "h"], ["ma", "a"], ["md", "d"], ["mt", "t"], ["mhs", "hs"], ["mas", "as"], ["myt", "yt"]].forEach(([i, k]) => { $("#" + i).value = m[k] ?? "" }); scrollTo(0, 0) }
+        function editP(id) { const p = S.players.find(x => x.id === id); if(!p)return; $("#pn").value=p.n; $("#pt").value=p.t; $("#pl").value=p.l||""; $("#pg").value=p.g; $("#pa").value=p.a; $("#py").value=p.y; $("#pr").value=p.r; }
         function addPlayer() {
-            const n = v("pn"), t = v("pt"); if (!n) return; let p = S.players.find(p => p.n === n && p.t === t); if (!p) { p = { id: uid(), n, t, g: 0, a: 0, y: 0, r: 0 }; S.players.push(p) }
-            p.g += +v("pg") || 0; p.a += +v("pa") || 0; p.y += +v("py") || 0; p.r += +v("pr") || 0; save()
+            const n = v("pn"), t = v("pt"); if (!n) return; let p = S.players.find(x => x.n === n && x.t === t); if (!p) { p = { id: uid(), n, t, g: 0, a: 0, y: 0, r: 0 }; S.players.push(p) }
+            p.g += +v("pg") || 0; p.a += +v("pa") || 0; p.y += +v("py") || 0; p.r += +v("pr") || 0; if(v("pl")) p.l = v("pl"); save()
+        }
+        function setPlayer() {
+            const n = v("pn"), t = v("pt"); if (!n) return; let p = S.players.find(x => x.n === n && x.t === t); if (!p) { p = { id: uid(), n, t }; S.players.push(p) }
+            p.g = +v("pg") || 0; p.a = +v("pa") || 0; p.y = +v("py") || 0; p.r = +v("pr") || 0; p.l = v("pl"); save()
         }
         function addVid() { if (!ytId(v("vu"))) return alert("Link YouTube không hợp lệ"); S.videos.push({ id: uid(), t: v("vt") || "Highlight", u: v("vu") }); save() }
         function setLive() { if (!ytId(v("lu"))) return alert("Link YouTube không hợp lệ"); S.videos.forEach(x => { x.live = false }); S.videos.push({ id: uid(), t: v("lt") || "Trực tiếp", u: v("lu"), live: true }); save() }
