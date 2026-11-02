@@ -28,7 +28,7 @@ export default async function handler(req, res) {
       if (!okPass(req.headers["x-admin-password"])) return res.status(401).json({ error: "Sai mật khẩu" });
       if (req.body?.login) return res.status(200).json({ ok: true });
       const state = clean(req.body?.state);
-      if (JSON.stringify(state).length > 900000) return res.status(413).json({ error: "Dữ liệu quá lớn" });
+      if (JSON.stringify(state).length > 800000) return res.status(413).json({ error: "Dữ liệu quá lớn" });
       await redis.set(KEY, state);
       return res.status(200).json({ ok: true });
     }
